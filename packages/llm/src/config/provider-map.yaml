@@ -1,0 +1,63 @@
+FAST_CLASSIFICATION:
+  primary: groq
+  model: llama-3.1-8b-instant
+  maxTokens: 100
+  fallback: template
+
+JD_ANALYSIS:
+  primary: openrouter
+  model: qwen/qwen-2.5-72b-instruct:free
+  maxTokens: 500
+  fallback: groq
+  fallbackModel: llama-3.1-8b-instant
+  lastResort: template
+
+COVER_LETTER:
+  primary: openrouter
+  model: meta-llama/llama-3.1-70b-instruct:free
+  maxTokens: 1500
+  fallback: openrouter
+  fallbackModel: qwen/qwen-2.5-72b-instruct:free
+  lastResort: template
+
+OUTREACH_EMAIL:
+  primary: groq
+  model: llama-3.1-8b-instant
+  maxTokens: 500
+  fallback: openrouter
+  fallbackModel: mistralai/mistral-7b-instruct:free
+  lastResort: template
+
+BRIEFING_SUMMARY:
+  primary: groq
+  model: llama-3.1-8b-instant
+  maxTokens: 300
+  fallback: template
+
+BUSINESS_REASONING:
+  primary: openrouter
+  model: deepseek/deepseek-r1:free
+  maxTokens: 3000
+  fallback: openrouter
+  fallbackModel: qwen/qwen-2.5-72b-instruct:free
+  lastResort: template
+
+FUNCTION_CALLING:
+  primary: ollama
+  model: qwen2.5:7b
+  fallback: groq
+  fallbackModel: llama-3.1-8b-instant
+  lastResort: template
+
+GENERAL_CHAT:
+  primary: openrouter
+  model: meta-llama/llama-3.1-8b-instruct:free
+  fallback: groq
+  fallbackModel: llama-3.1-8b-instant
+  lastResort: template
+
+EMBEDDING:
+  primary: onnx_local
+  model: all-MiniLM-L6-v2
+  fallback: huggingface
+  fallbackModel: sentence-transformers/all-MiniLM-L6-v2

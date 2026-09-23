@@ -1,0 +1,23 @@
+{
+  "name": "@nexa/channels",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nexa/shared": "*",
+    "@nexa/algorithms": "*",
+    "@nexa/llm": "*",
+    "@nexa/security": "*",
+    "@nexa/observability": "*",
+    "@nexa/credentials": "*",
+    "@nexa/events": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

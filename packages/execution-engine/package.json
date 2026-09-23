@@ -1,0 +1,22 @@
+{
+  "name": "@nexa/execution-engine",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nexa/shared": "*",
+    "@nexa/database": "*",
+    "@nexa/events": "*",
+    "@nexa/agent-runtime": "*",
+    "@nexa/tools": "*",
+    "@nexa/memory": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

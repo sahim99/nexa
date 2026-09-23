@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-09-23T00:00:00.000Z" agent="Nexa" version="24.0.0" type="device">
+  <diagram id="nexa-v1-architecture" name="Nexa V1 Architecture">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Nexa — Version 1 Architecture" style="text;html=1;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#1a1a2e;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== USER LAYER ==================== -->
+        <mxCell id="user-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;arcSize=12;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="80" width="600" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="user-label" value="👤 USER" style="text;html=1;fontSize=14;fontStyle=1;align=center;fillColor=none;strokeColor=none;fontColor=#2e7d32;" vertex="1" parent="1">
+          <mxGeometry x="520" y="85" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="web" value="🌐 Web&#xa;(Next.js)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="620" y="85" width="100" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="telegram" value="📱 Telegram" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388e3c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="85" width="100" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="voice" value="🎤 Voice&#xa;(P9)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0e0e0;strokeColor=#9e9e9e;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="860" y="85" width="100" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: User → Interaction -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1565c0;strokeWidth=2;fontSize=10;" edge="1" parent="1" source="user-group" target="interaction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 1: INTERACTION AGENT ==================== -->
+        <mxCell id="interaction" value="🗣️ INTERACTION AGENT&#xa;&#xa;• Understand conversational requests&#xa;• Resolve context (user profile, memory)&#xa;• Ask clarification when genuinely needed&#xa;• Forward executable tasks to Manager&#xa;• Final user-facing communication&#xa;&#xa;⚠️ NO unrestricted write access&#xa;Inspired by: GAIA Comms Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbdefb;strokeColor=#1565c0;fontSize=10;align=left;spacingLeft=10;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="530" y="180" width="540" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="layer1-badge" value="LAYER 1" style="text;html=1;fontSize=9;fontStyle=1;fillColor=#1565c0;fontColor=#ffffff;rounded=1;spacingLeft=4;spacingRight=4;" vertex="1" parent="1">
+          <mxGeometry x="530" y="170" width="55" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Interaction → Manager -->
+        <mxCell id="arrow2" value="typed AgentTask" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6a1b9a;strokeWidth=2;fontSize=9;fontStyle=2;" edge="1" parent="1" source="interaction" target="manager">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 2: MANAGER AGENT ==================== -->
+        <mxCell id="manager" value="🧠 MANAGER AGENT&#xa;&#xa;• Understand user intent&#xa;• Retrieve profile, memory, permissions, state&#xa;• Select agents by capability (registry lookup)&#xa;• Create typed ExecutionPlan (DAG)&#xa;• Decompose complex work (parallel vs sequential)&#xa;• Decide when approval is required&#xa;• Replan failed tasks&#xa;• Synthesize verified results&#xa;&#xa;Inspired by: GAIA Executor Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#6a1b9a;fontSize=10;align=left;spacingLeft=10;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="530" y="350" width="540" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="layer2-badge" value="LAYER 2" style="text;html=1;fontSize=9;fontStyle=1;fillColor=#6a1b9a;fontColor=#ffffff;rounded=1;spacingLeft=4;spacingRight=4;" vertex="1" parent="1">
+          <mxGeometry x="530" y="340" width="55" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Plan Compiler box inside Manager area -->
+        <mxCell id="plan-compiler" value="📋 Plan Compiler&#xa;(Intent → DAG)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#6a1b9a;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="900" y="370" width="150" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Manager → Execution Engine -->
+        <mxCell id="arrow3" value="ExecutionPlan (DAG)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e65100;strokeWidth=2;fontSize=9;fontStyle=2;" edge="1" parent="1" source="manager" target="exec-engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 3: EXECUTION ENGINE ==================== -->
+        <mxCell id="exec-engine" value="⚙️ EXECUTION ENGINE&#xa;&#xa;• Execute durable DAGs&#xa;• Run independent tasks in parallel&#xa;• Maintain checkpoints (PostgreSQL)&#xa;• Retry with exponential backoff&#xa;• Resume after restart&#xa;• Handle cancellation + timeouts&#xa;• Enforce budgets (steps, LLM calls, cost)&#xa;• Pause for approval → resume after&#xa;• Track task state machine&#xa;&#xa;Inspired by: GAIA background runner + LifeOS agent worker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=10;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="530" y="540" width="540" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="layer3-badge" value="LAYER 3" style="text;html=1;fontSize=9;fontStyle=1;fillColor=#e65100;fontColor=#ffffff;rounded=1;spacingLeft=4;spacingRight=4;" vertex="1" parent="1">
+          <mxGeometry x="530" y="530" width="55" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Exec Engine → Specialists -->
+        <mxCell id="arrow4" value="AgentTask per node" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#00695c;strokeWidth=2;fontSize=9;fontStyle=2;" edge="1" parent="1" source="exec-engine" target="specialists-group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 4: SPECIALIST AGENTS ==================== -->
+        <mxCell id="specialists-group" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f2f1;strokeColor=#00695c;arcSize=8;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="750" width="900" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="layer4-badge" value="LAYER 4 — SPECIALIST AGENTS" style="text;html=1;fontSize=11;fontStyle=1;fillColor=#00695c;fontColor=#ffffff;rounded=1;spacingLeft=4;spacingRight=4;" vertex="1" parent="1">
+          <mxGeometry x="350" y="738" width="200" height="16" as="geometry" />
+        </mxCell>
+
+        <mxCell id="job-hunter" value="🔍 Job&#xa;Hunter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="370" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="job-matcher" value="🎯 Job&#xa;Matcher" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="460" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="app-agent" value="📝 Application&#xa;Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="550" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="outreach-agent" value="🤝 Outreach&#xa;Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="640" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="email-agent" value="✉️ Email&#xa;Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="730" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tg-agent" value="📱 Telegram&#xa;Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="820" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="research-agent" value="🔬 Research&#xa;Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00695c;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="910" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="more-agents" value="➕ More&#xa;Agents..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0e0e0;strokeColor=#9e9e9e;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="770" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="specialist-note" value="Each agent: scoped tools + scoped permissions + deterministic-first + optional LLM" style="text;html=1;fontSize=9;fontStyle=2;align=center;fillColor=none;strokeColor=none;fontColor=#616161;" vertex="1" parent="1">
+          <mxGeometry x="450" y="835" width="600" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Specialists → Tool Registry -->
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#4e342e;strokeWidth=2;" edge="1" parent="1" source="specialists-group" target="tool-registry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== TOOL REGISTRY ==================== -->
+        <mxCell id="tool-registry" value="🔧 TOOL REGISTRY&#xa;&#xa;Web Search | Crawl4AI | Playwright | Gmail API | Google Calendar&#xa;Telegram API | Files | PostgreSQL | pgvector | n8n | Browser Extension&#xa;&#xa;Each tool: name, schema, permissions, risk level, timeout, retry policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#efebe9;strokeColor=#4e342e;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="900" width="800" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Tool Registry → External Systems -->
+        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#37474f;strokeWidth=2;" edge="1" parent="1" source="tool-registry" target="external-systems">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== EXTERNAL SYSTEMS ==================== -->
+        <mxCell id="external-systems" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eceff1;strokeColor=#37474f;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="400" y="1020" width="800" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-label" value="🌍 EXTERNAL SYSTEMS" style="text;html=1;fontSize=10;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#37474f;" vertex="1" parent="1">
+          <mxGeometry x="410" y="1025" width="140" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="ext1" value="LinkedIn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ext2" value="Gmail" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="630" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ext3" value="Calendar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="700" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ext4" value="Naukri" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="770" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ext5" value="ATS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ext6" value="n8n" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="910" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ext7" value="Web" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfd8dc;strokeColor=#546e7a;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="980" y="1028" width="60" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== SIDE PANELS (Left) ==================== -->
+
+        <!-- LLM Gateway -->
+        <mxCell id="llm-gateway" value="🤖 LLM GATEWAY&#xa;(OpenRouter)&#xa;&#xa;ModelRouter&#xa;FAST | REASONING&#xa;EXTRACTION&#xa;CLASSIFICATION&#xa;&#xa;Fallback chain&#xa;Token tracking&#xa;Cost tracking" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#f9a825;fontSize=9;align=center;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="350" width="150" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="llm-arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#f9a825;strokeWidth=1;dashed=1;" edge="1" parent="1" source="llm-gateway" target="manager">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="llm-arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#f9a825;strokeWidth=1;dashed=1;" edge="1" parent="1" source="llm-gateway" target="specialists-group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== SIDE PANELS (Right) ==================== -->
+
+        <!-- Validation + Approval -->
+        <mxCell id="validation" value="✅ VALIDATION&#xa;+ APPROVAL&#xa;&#xa;Schema validation&#xa;Business rules&#xa;Permission check&#xa;Evidence check&#xa;External verify&#xa;&#xa;Risk Levels:&#xa;READ&#xa;LOW_RISK_WRITE&#xa;APPROVAL_REQUIRED&#xa;BLOCKED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=9;align=center;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="350" width="150" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="val-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#c62828;strokeWidth=1;dashed=1;" edge="1" parent="1" source="validation" target="exec-engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== BOTTOM: SUPPORTING SYSTEMS ==================== -->
+
+        <!-- Memory -->
+        <mxCell id="memory" value="🧠 MEMORY&#xa;&#xa;PostgreSQL + pgvector&#xa;Hybrid Retrieval&#xa;(Keyword + Vector + Metadata)&#xa;&#xa;Types: User | Conversation&#xa;Operational | Semantic | Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#283593;fontSize=9;align=center;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="600" width="180" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Events -->
+        <mxCell id="events" value="📊 ACTIVITY EVENTS&#xa;&#xa;agent.started/completed/failed&#xa;task.created/completed&#xa;job.found/matched&#xa;application.submitted&#xa;email.sent&#xa;approval.requested&#xa;&#xa;→ &quot;What did you do today?&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#283593;fontSize=9;align=center;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="770" width="180" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Database -->
+        <mxCell id="database" value="🗄️ DATABASE&#xa;(PostgreSQL + Supabase)&#xa;&#xa;users | profiles | agents&#xa;tasks | execution_plans&#xa;approvals | permissions&#xa;jobs | applications&#xa;conversations | memories&#xa;activity_events" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#283593;fontSize=9;align=center;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="620" width="180" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Permissions -->
+        <mxCell id="perms" value="🔒 PERMISSIONS&#xa;&#xa;Per-agent tool scopes&#xa;Per-task evaluation&#xa;Credential broker&#xa;Secret isolation&#xa;Rate limits" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#283593;fontSize=9;align=center;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="800" width="180" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== PHASE LEGEND ==================== -->
+        <mxCell id="legend-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#bdbdbd;" vertex="1" parent="1">
+          <mxGeometry x="100" y="80" width="300" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="Implementation Phases" style="text;html=1;fontSize=12;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#212121;" vertex="1" parent="1">
+          <mxGeometry x="110" y="85" width="160" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="l0" value="P0 Workspace Ready ✅" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#4caf50;" vertex="1" parent="1">
+          <mxGeometry x="120" y="110" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" value="P1 Agent Runtime (blue)" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#1565c0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="128" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" value="P2 Execution Engine (orange)" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#e65100;" vertex="1" parent="1">
+          <mxGeometry x="120" y="146" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" value="P3 Security + Approval (red)" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#c62828;" vertex="1" parent="1">
+          <mxGeometry x="120" y="164" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l4" value="P4 Job Intelligence (teal)" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#00695c;" vertex="1" parent="1">
+          <mxGeometry x="120" y="182" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l5" value="P5–P9 Later Phases (grey)" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#9e9e9e;" vertex="1" parent="1">
+          <mxGeometry x="120" y="200" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l6" value="─── Dashed = shared service" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#757575;" vertex="1" parent="1">
+          <mxGeometry x="120" y="220" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="l7" value="── Solid = data flow" style="text;html=1;fontSize=10;fillColor=none;strokeColor=none;fontColor=#757575;" vertex="1" parent="1">
+          <mxGeometry x="120" y="238" width="200" height="16" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

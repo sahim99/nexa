@@ -1,0 +1,30 @@
+{
+  "name": "@nexa/workflows",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nexa/algorithms": "*",
+    "@nexa/approvals": "*",
+    "@nexa/channels": "*",
+    "@nexa/database": "*",
+    "@nexa/events": "*",
+    "@nexa/job-collectors": "*",
+    "@nexa/job-pipeline": "*",
+    "@nexa/learning": "*",
+    "@nexa/llm": "*",
+    "@nexa/notifications": "*",
+    "@nexa/observability": "*",
+    "@nexa/profile": "*",
+    "@nexa/security": "*",
+    "@nexa/shared": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

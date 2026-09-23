@@ -1,0 +1,20 @@
+{
+  "name": "@nexa/resume",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nexa/shared": "*",
+    "@nexa/llm": "*",
+    "@nexa/security": "*",
+    "@nexa/observability": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

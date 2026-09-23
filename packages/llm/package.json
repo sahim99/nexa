@@ -1,0 +1,19 @@
+{
+  "name": "@nexa/llm",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && node -e \"const fs=require('fs'); fs.mkdirSync('dist/config', {recursive:true}); fs.copyFileSync('src/config/provider-map.yaml', 'dist/config/provider-map.yaml');\"",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nexa/shared": "*",
+    "@nexa/credentials": "*",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

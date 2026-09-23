@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  description String
+  state       String   // TaskState enum (e.g. RUNNING, COMPLETED)
+  budget      Json     // maxSteps, maxLlmCalls, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  plan        ExecutionPlan?
+}
+
+model ExecutionPlan {
+  id        String   @id @default(cuid())
+  taskId    String   @unique
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  nodes     ExecutionNode[]
+}
+
+model ExecutionNode {
+  id              String   @id @default(cuid())
+  planId          String
+  plan            ExecutionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  
+  name            String
+  agentId         String?
+  toolId          String?
+  dependencies    String[] // Array of dependent node IDs
+  payload         Json
+  state           String   // TaskState enum
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  approvals       ApprovalRequest[]
+}
+
+model ApprovalRequest {
+  id          String   @id @default(cuid())
+  nodeId      String
+  node        ExecutionNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  
+  description String
+  riskLevel   String   // ToolPermission enum
+  status      String   // PENDING, APPROVED, REJECTED
+  
+  requestedAt DateTime @default(now())
+  approvedAt  DateTime?
+  approvedBy  String?
+}
+
+model ActivityEvent {
+  id          String   @id @default(cuid())
+  eventType   String
+  timestamp   DateTime @default(now())
+  payload     Json
+  source      String
+}
+
+model MemoryRecord {
+  id          String   @id @default(cuid())
+  type        String   // USER, CONVERSATION, OPERATIONAL
+  content     String
+  metadata    Json
+  createdAt   DateTime @default(now())
+  
+  // pgvector support
+  vector      Unsupported("vector")?
+}

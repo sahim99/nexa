@@ -1,0 +1,44 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Agent {
+  id           String   @id @default(uuid())
+  name         String
+  capabilities String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  description String
+  state       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Memory using pgvector
+model MemoryRecord {
+  id        String                 @id @default(uuid())
+  type      String
+  content   String
+  metadata  Json
+  vector    Unsupported("vector")?
+  createdAt DateTime               @default(now())
+}

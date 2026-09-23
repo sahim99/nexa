@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# Environment
+.env
+*.env
+**/.env
+**/*.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+coverage/
+*.js.map
+
+# Prisma
+apps/api/prisma/migrations/**/migration_lock.toml
+
+# Research repos (large, cloned separately)
+research/open-source/gaia/
+research/open-source/LifeOS/
+research/open-source/AIfred-Intelligence/
+research/open-source/job_agentic/
+research/open-source/jobpilot/
+
+# Separate projects
+Project-video-X/
