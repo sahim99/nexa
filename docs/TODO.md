@@ -368,14 +368,14 @@
   8. Dashboard: job card (green badge); LLM stats panel accurate
   - ✦ All 8 steps completed in Docker
 
-- [ ] Pre-push verification (ALL must be green):
+- [x] Pre-push verification (ALL must be green):
   - ✦ `bash scripts/docker-test.sh` exits 0 (all 9 E2E specs)
   - ✦ `npx eslint .` exits 0 (no SDK imports outside providers)
   - ✦ `tsc --noEmit` exits 0 in all packages
   - ✦ `npm run build` exits 0 for apps/web
   - ✦ Metrics: ≥40% of pipeline operations show `llmCalls: 0`
 
-- [ ] GitHub push:
+- [x] GitHub push:
   - ✦ `git remote add origin https://github.com/sahim99/nexa.git`
   - ✦ `git checkout -b main`
   - ✦ `git add .`
