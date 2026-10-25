@@ -1,0 +1,23 @@
+FROM node:22-slim
+
+WORKDIR /app
+
+# Install required system packages for Prisma and builds
+RUN apt-get update && apt-get install -y openssl git curl && rm -rf /var/lib/apt/lists/*
+
+# Copy configuration and workspaces
+COPY package*.json ./
+COPY tsconfig.base.json ./
+COPY packages ./packages
+COPY apps/api ./apps/api
+
+# Install dependencies and compile
+RUN npm install
+RUN npx prisma generate --schema=packages/database/prisma/schema.prisma
+RUN npm run build --workspaces --if-present
+
+EXPOSE 3001
+ENV PORT=3001
+ENV NODE_ENV=production
+
+CMD ["node", "apps/api/dist/main.js"]
