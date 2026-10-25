@@ -4,7 +4,7 @@ import { AuditLogger } from '@nexa/events';
 import { ApprovalService } from '@nexa/approvals';
 import { GmailAdapter } from '@nexa/channels';
 
-@Controller('api/approvals')
+@Controller('approvals')
 export class ApprovalController {
   private auditLogger: AuditLogger;
   private gmailAdapter: GmailAdapter;

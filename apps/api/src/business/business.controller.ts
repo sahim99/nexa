@@ -21,7 +21,7 @@ export interface BusinessIdeaRecord {
   createdAt: string;
 }
 
-@Controller('api/business')
+@Controller('business')
 export class BusinessController {
   private marketResearchAgent = new MarketResearchAgent();
   private productManagerAgent = new ProductManagerAgent();

@@ -8,7 +8,7 @@ import {
   FollowUpCheckWorkflow
 } from '@nexa/workflows';
 
-@Controller('api/workflows')
+@Controller('workflows')
 export class WorkflowsController {
   private scheduler = new SchedulerService();
   private dailyJobScan = new DailyJobScanWorkflow();

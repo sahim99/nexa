@@ -22,9 +22,13 @@
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
   },
   "dependencies": {
+    "@nestjs/bullmq": "^12.0.0",
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
+    "@nestjs/jwt": "^12.0.2",
+    "@nestjs/passport": "^12.0.0",
     "@nestjs/platform-express": "^12.0.1",
+    "@nestjs/swagger": "^12.0.2",
     "@nexa/agent-runtime": "*",
     "@nexa/agents": "*",
     "@nexa/approvals": "^1.0.0",
@@ -37,7 +41,12 @@
     "@nexa/resume": "*",
     "@nexa/shared": "*",
     "@nexa/workflows": "*",
+    "bullmq": "^6.3.11",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

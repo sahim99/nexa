@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-10-03T17:15:00Z",
+  "totalJobsScanned": 20,
+  "telemetry": {
+    "algorithmCalls": 18,
+    "llmCalls": 2,
+    "algorithmSharePercent": 90,
+    "averageLatencyMs": 135,
+    "errors": 0
+  }
+}

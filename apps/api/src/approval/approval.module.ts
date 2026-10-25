@@ -3,8 +3,10 @@ import { DatabaseService } from '@nexa/database';
 import { EventBus } from '@nexa/events';
 import { ApprovalService } from '@nexa/approvals';
 import { ApprovalController } from './approval.controller.js';
+import { EventsModule } from '../events/events.module.js';
 
 @Module({
+  imports: [EventsModule],
   controllers: [ApprovalController],
   providers: [
     {

@@ -1,13 +1,14 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { SseController } from './sse.controller.js';
 import { EventBus } from '@nexa/events';
 
-@Global()
 @Module({
+  controllers: [SseController],
   providers: [
     {
       provide: EventBus,
-      useValue: new EventBus(),
-    }
+      useFactory: () => new EventBus(),
+    },
   ],
   exports: [EventBus],
 })

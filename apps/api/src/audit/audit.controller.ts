@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { DatabaseService } from '@nexa/database';
 import { AuditLogger } from '@nexa/events';
 
-@Controller('api/audit')
+@Controller('audit')
 export class AuditController {
   private auditLogger: AuditLogger;
 
