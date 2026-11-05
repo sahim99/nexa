@@ -16,7 +16,7 @@
 - [x] `packages/llm/src/providers/ollama.provider.ts` — local Ollama; unlimited; models: `llama3.1:8b`, `qwen2.5:7b`
   - ✦ `isAvailable()` returns true when Ollama running, false when not; no crash either way
 
-- [x] `packages/llm/src/providers/groq.provider.ts` — Groq free; 30 req/min, 6000 req/day; `llama-3.1-8b-instant`, `gemma2-9b-it`
+- [x] `packages/llm/src/providers/groq.provider.ts` — Groq free; 30 req/min, 1000 req/day; `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`, `openai/gpt-oss-120b`
   - ✦ `getRemainingQuota()` reads from Redis quota tracker; under limit → calls succeed; over limit → throws `QuotaExceededError`
 
 - [x] `packages/llm/src/providers/openrouter.provider.ts` — OpenRouter free models: `qwen/qwen-2.5-72b-instruct:free`, `meta-llama/llama-3.1-8b-instruct:free`, `deepseek/deepseek-r1:free`, `mistralai/mistral-7b-instruct:free`

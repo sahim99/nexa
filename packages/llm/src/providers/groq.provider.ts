@@ -19,20 +19,27 @@ export interface IQuotaChecker {
 export class GroqProvider implements LlmProvider {
   readonly name: ProviderName = 'groq';
 
+  /**
+   * Free-tier chat models as of 2026-11-05 (console.groq.com/docs/models and /rate-limits).
+   * llama-3.1-8b-instant shut down 2026-08-16 (replacement: openai/gpt-oss-20b).
+   * gemma2-9b-it shut down 2025-10-08.
+   * qwen/qwen3.6-27b shut down 2026-09-14 (replacement: qwen/qwen3.8-27b).
+   * Free-plan limits for these chat models: 30 RPM, 1,000 RPD, 8K TPM, 200K TPD.
+   */
   readonly models: Partial<Record<TaskType, string>> = {
-    FAST_CLASSIFICATION: 'llama-3.1-8b-instant',
-    BRIEFING_SUMMARY: 'llama-3.1-8b-instant',
-    OUTREACH_EMAIL: 'gemma2-9b-it',
-    JD_ANALYSIS: 'gemma2-9b-it',
-    FUNCTION_CALLING: 'llama-3.1-8b-instant',
-    GENERAL_CHAT: 'llama-3.1-8b-instant',
-    COVER_LETTER: 'llama-3.1-8b-instant',
-    BUSINESS_REASONING: 'llama-3.1-8b-instant'
+    FAST_CLASSIFICATION: 'openai/gpt-oss-20b',
+    BRIEFING_SUMMARY: 'openai/gpt-oss-20b',
+    OUTREACH_EMAIL: 'openai/gpt-oss-20b',
+    GENERAL_CHAT: 'openai/gpt-oss-20b',
+    COVER_LETTER: 'openai/gpt-oss-20b',
+    JD_ANALYSIS: 'qwen/qwen3.8-27b',
+    FUNCTION_CALLING: 'qwen/qwen3.8-27b',
+    BUSINESS_REASONING: 'openai/gpt-oss-120b'
   };
 
   readonly rateLimit = {
     requestsPerMinute: 30,
-    requestsPerDay: 6000
+    requestsPerDay: 1000
   };
 
   readonly costPerMillionTokens = {
@@ -130,12 +137,12 @@ export class GroqProvider implements LlmProvider {
       const withinMin = await this.quotaChecker.isWithinLimit(this.name, 'minute', req.userId);
       const withinDay = await this.quotaChecker.isWithinLimit(this.name, 'day', req.userId);
       if (!withinMin || !withinDay) {
-        throw new QuotaExceededError(this.name, !withinMin ? 'Per-minute limit (30) reached' : 'Daily limit (6000) reached');
+        throw new QuotaExceededError(this.name, !withinMin ? 'Per-minute limit (30) reached' : 'Daily limit (1000) reached');
       }
     }
 
     const start = Date.now();
-    const model = req.model || this.models[req.taskType] || 'llama-3.1-8b-instant';
+    const model = req.model || this.models[req.taskType] || 'openai/gpt-oss-20b';
 
     let messages = req.messages;
     if (!messages && req.prompt) {

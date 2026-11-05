@@ -1,10 +1,21 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { AgentRegistry, TaskRunner } from '@nexa/agent-runtime';
-import { InteractionAgent, ManagerAgent } from '@nexa/agents';
-import { AgentTask } from '@nexa/shared';
+import {
+  ApplicationAgent,
+  BusinessPlanAgent,
+  CvOptimizerAgent,
+  InteractionAgent,
+  LaunchAgent,
+  ManagerAgent,
+  MarketResearchAgent,
+  ProductManagerAgent,
+  SelfRepairAgent,
+  TelegramAgent
+} from '@nexa/agents';
+import { Agent, AgentTask } from '@nexa/shared';
+import { toExecutionPlan } from './plan-contract.js';
 import { PlanCompiler } from '@nexa/execution-engine';
 import { DatabaseService } from '@nexa/database';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class AgentService implements OnModuleInit {
@@ -18,10 +29,30 @@ export class AgentService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // Register core agents on startup
-    this.registry.register(this.interactionAgent);
-    this.registry.register(this.managerAgent);
-    console.log('✅ Core agents registered in AgentRegistry.');
+    this.registerIfAbsent(this.interactionAgent);
+    this.registerIfAbsent(this.managerAgent);
+
+    const specialists: Agent[] = [
+      new CvOptimizerAgent(),
+      new ApplicationAgent(),
+      new TelegramAgent(),
+      new MarketResearchAgent(),
+      new ProductManagerAgent(),
+      new BusinessPlanAgent(),
+      new LaunchAgent(),
+      new SelfRepairAgent()
+    ];
+    for (const agent of specialists) {
+      this.registerIfAbsent(agent);
+    }
+
+    console.log(`✅ Registered ${this.registry.getAllAgents().length} agents in AgentRegistry.`);
+  }
+
+  private registerIfAbsent(agent: Agent) {
+    if (!this.registry.get(agent.id)) {
+      this.registry.register(agent);
+    }
   }
 
   async interact(userInput: string) {
@@ -73,31 +104,89 @@ export class AgentService implements OnModuleInit {
         throw new Error(`Manager failed: ${managerResult.error}`);
       }
 
-      const plan = managerResult.data;
+      const drafted = toExecutionPlan(managerResult.data, 'pending');
 
-      // 4. Create a root task in the DB to track this overall request
-      const dbTask = await this.db.prisma.task.create({
-        data: {
-          description: userInput,
-          state: 'RUNNING',
-          budget: { maxSteps: 10, maxCost: 0.50 }
+      try {
+        // 4. Create a root task in the DB to track this overall request
+        const dbTask = await this.db.prisma.task.create({
+          data: {
+            description: userInput,
+            state: 'RUNNING',
+            budget: { maxSteps: 10, maxCost: 0.50 }
+          }
+        });
+
+        const plan = toExecutionPlan(managerResult.data, dbTask.id);
+        await this.planCompiler.compile(dbTask.id, plan);
+
+        return {
+          interaction: interactionResult.data,
+          planId: plan.id,
+          taskId: dbTask.id,
+          nodes: plan.nodes,
+          persisted: true,
+          message: 'Plan compiled and execution engine started in the background.'
+        };
+      } catch (err: any) {
+        if (!isDatabaseUnavailable(err)) {
+          throw err;
         }
-      });
-
-      // 5. Compile the plan into the DB, which kicks off the QueueWorker asynchronously
-      await this.planCompiler.compile(dbTask.id, plan);
-
-      return {
-        interaction: interactionResult.data,
-        planId: plan.id,
-        taskId: dbTask.id,
-        message: 'Plan compiled and execution engine started in the background.'
-      };
+        return {
+          interaction: interactionResult.data,
+          planId: drafted.id,
+          taskId: null,
+          nodes: drafted.nodes,
+          persisted: false,
+          message: 'Plan was created but not stored. Postgres is not reachable.'
+        };
+      }
     }
 
     // 4. Return the interaction response (e.g. clarification needed)
     return {
       interaction: interactionResult.data
     };
+  }
+
+  listAgents() {
+    return this.registry.getAllAgents().map((agent) => ({
+      id: agent.id,
+      name: agent.name,
+      capabilities: agent.capabilities,
+      lane: laneForAgent(agent.id),
+      status: 'IDLE' as const,
+      type: algorithmAgents.has(agent.id) ? ('ALGORITHM' as const) : ('LLM' as const),
+      lastActivity: 'Registered in this process. No task history is stored yet.',
+      tasksCompleted: 0
+    }));
+  }
+}
+
+function isDatabaseUnavailable(err: any): boolean {
+  const message = String(err?.message || '');
+  return (
+    err?.errorCode === 'P1001' ||
+    message.includes("Can't reach database") ||
+    message.includes('DATABASE_URL')
+  );
+}
+
+const algorithmAgents = new Set(['agent_cv_optimizer', 'agent_self_repair']);
+
+function laneForAgent(id: string): 'DISCOVERY' | 'ENRICHMENT' | 'DECISION' | 'APPLICATION' | 'OUTREACH' | 'COMPLETED' {
+  switch (id) {
+    case 'agent_market_research':
+      return 'DISCOVERY';
+    case 'agent_cv_optimizer':
+      return 'ENRICHMENT';
+    case 'agent_application':
+      return 'APPLICATION';
+    case 'agent_telegram':
+    case 'agent_launch':
+      return 'OUTREACH';
+    case 'agent_self_repair':
+      return 'COMPLETED';
+    default:
+      return 'DECISION';
   }
 }

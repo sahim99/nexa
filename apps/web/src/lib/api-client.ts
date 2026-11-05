@@ -1,4 +1,17 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_PREFIX = '/v1';
+const TOKEN_KEY = 'nexa_access_token';
+
+export function getAccessToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return window.localStorage.getItem(TOKEN_KEY);
+}
+
+export function setAccessToken(token: string | null) {
+  if (typeof window === 'undefined') return;
+  if (token) window.localStorage.setItem(TOKEN_KEY, token);
+  else window.localStorage.removeItem(TOKEN_KEY);
+}
 
 export interface JobItem {
   id: string;
@@ -90,10 +103,16 @@ export interface UserProfileData {
   bio?: string;
 }
 
+function authHeaders(): Record<string, string> {
+  const token = getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
   const headers = {
     'Content-Type': 'application/json',
+    ...authHeaders(),
     ...(options.headers || {})
   };
 
@@ -107,31 +126,62 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const apiClient = {
+  async login(username: string, password: string): Promise<{ access_token: string }> {
+    const result = await request<{ access_token: string; message: string }>(`${API_PREFIX}/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({ username, password })
+    });
+    if (!result.access_token) {
+      throw new Error('Login response did not include an access token');
+    }
+    setAccessToken(result.access_token);
+    return result;
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await request(`${API_PREFIX}/auth/logout`, { method: 'POST' });
+    } finally {
+      setAccessToken(null);
+    }
+  },
+
+  async me(): Promise<{ userId: string; username: string }> {
+    return request(`${API_PREFIX}/auth/me`);
+  },
+
+  async interact(userInput: string): Promise<any> {
+    return request(`${API_PREFIX}/agent/interact`, {
+      method: 'POST',
+      body: JSON.stringify({ userInput })
+    });
+  },
+
   // Jobs
   async getJobs(decision?: string): Promise<JobItem[]> {
     const query = decision ? `?decision=${encodeURIComponent(decision)}` : '';
-    return request<JobItem[]>(`/api/jobs${query}`);
+    return request<JobItem[]>(`${API_PREFIX}/jobs${query}`);
   },
 
-  async collectJobs(): Promise<{ collectedCount: number }> {
-    return request<{ collectedCount: number }>('/api/jobs/collect', { method: 'POST' });
+  async collectJobs(): Promise<{ collectedCount: number; storedCount?: number; persistence?: string }> {
+    return request(`${API_PREFIX}/jobs/collect`, { method: 'POST' });
   },
 
   // Approvals
   async getApprovals(status?: string): Promise<ApprovalItem[]> {
     const query = status ? `?status=${encodeURIComponent(status)}` : '';
-    return request<ApprovalItem[]>(`/api/approvals${query}`);
+    return request<ApprovalItem[]>(`${API_PREFIX}/approvals${query}`);
   },
 
   async approveRequest(id: string, userId: string = 'dashboard_user'): Promise<any> {
-    return request(`/api/approvals/${id}/approve`, {
+    return request(`${API_PREFIX}/approvals/${id}/approve`, {
       method: 'POST',
       body: JSON.stringify({ userId })
     });
   },
 
   async rejectRequest(id: string, reason?: string, userId: string = 'dashboard_user'): Promise<any> {
-    return request(`/api/approvals/${id}/reject`, {
+    return request(`${API_PREFIX}/approvals/${id}/reject`, {
       method: 'POST',
       body: JSON.stringify({ userId, reason })
     });
@@ -140,122 +190,52 @@ export const apiClient = {
   // Audit Logs
   async getAuditLogs(userId?: string): Promise<AuditLogItem[]> {
     const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-    return request<AuditLogItem[]>(`/api/audit${query}`);
+    return request<AuditLogItem[]>(`${API_PREFIX}/audit${query}`);
   },
 
   // Metrics & LLM Stats
   async getMetrics(): Promise<MetricsData> {
-    try {
-      return await request<MetricsData>('/api/metrics');
-    } catch {
-      // Standalone simulation fallback
-      return {
-        llmCalls: 4,
-        cacheHits: 12,
-        algorithmDecisions: 48,
-        pipelineRuns: 6
-      };
-    }
+    return request<MetricsData>(`${API_PREFIX}/metrics`);
   },
 
   async getLlmStats(): Promise<LlmStatsData> {
     const m = await this.getMetrics();
-    const totalCalls = m.llmCalls + m.cacheHits;
+    const totalCalls = (m.llmCalls || 0) + (m.cacheHits || 0);
     const cacheHitRate = totalCalls > 0 ? Math.round((m.cacheHits / totalCalls) * 100) : 0;
     const totalOps = (m.algorithmDecisions || 0) + (m.llmCalls || 0);
-    const algoPct = totalOps > 0 ? Math.round(((m.algorithmDecisions || 0) / totalOps) * 100) : 75;
+    const algoPct = totalOps > 0 ? Math.round(((m.algorithmDecisions || 0) / totalOps) * 100) : 0;
 
     return {
       totalCalls: m.llmCalls || 0,
       cacheHits: m.cacheHits || 0,
       cacheHitRatePercent: cacheHitRate,
       algorithmSavedCalls: m.algorithmDecisions || 0,
-      algorithmPercentage: Math.max(40, algoPct),
+      algorithmPercentage: algoPct,
       totalCostUsd: 0.0,
       providers: {
-        groq: Math.round((m.llmCalls || 4) * 0.4),
-        openrouter: Math.round((m.llmCalls || 4) * 0.4),
-        ollama: Math.round((m.llmCalls || 4) * 0.1),
-        template: Math.round((m.llmCalls || 4) * 0.1)
+        groq: 0,
+        openrouter: 0,
+        ollama: 0,
+        template: 0
       }
     };
   },
 
-  // Agent Kanban Board
+  // Registered agents from the API. Empty until login succeeds.
   async getAgentBoard(): Promise<AgentCard[]> {
-    return [
-      {
-        id: 'agent_gh_collector',
-        name: 'Greenhouse Collector',
-        lane: 'DISCOVERY',
-        status: 'IDLE',
-        type: 'ALGORITHM',
-        lastActivity: 'Scanned 14 roles (<12ms)',
-        tasksCompleted: 42
-      },
-      {
-        id: 'agent_email_finder',
-        name: 'Email Enrichment',
-        lane: 'ENRICHMENT',
-        status: 'IDLE',
-        type: 'ALGORITHM',
-        lastActivity: 'DNS MX verified recruiter email',
-        tasksCompleted: 19
-      },
-      {
-        id: 'agent_decision_engine',
-        name: 'Decision Engine',
-        lane: 'DECISION',
-        status: 'IDLE',
-        type: 'HYBRID',
-        lastActivity: 'Calculated 6-dimension fit',
-        tasksCompleted: 35
-      },
-      {
-        id: 'agent_resume_service',
-        name: 'Application Agent',
-        lane: 'APPLICATION',
-        status: 'WAITING',
-        type: 'LLM',
-        lastActivity: 'Cover letter queued for approval',
-        tasksCompleted: 8
-      },
-      {
-        id: 'agent_gmail_outreach',
-        name: 'Gmail Outreach',
-        lane: 'OUTREACH',
-        status: 'IDLE',
-        type: 'ALGORITHM',
-        lastActivity: 'Rate limits enforced (5/hr)',
-        tasksCompleted: 11
-      },
-      {
-        id: 'agent_audit_ledger',
-        name: 'Immutable Audit Ledger',
-        lane: 'COMPLETED',
-        status: 'COMPLETED',
-        type: 'ALGORITHM',
-        lastActivity: 'Append-only verification clean',
-        tasksCompleted: 86
-      }
-    ];
+    return request<AgentCard[]>(`${API_PREFIX}/agent`);
   },
 
-  // User Profile
-  async getUserProfile(): Promise<UserProfileData> {
-    return {
-      fullName: 'Sahim Developer',
-      email: 'sahim@enterprise.com',
-      targetRoles: ['Principal Systems Architect', 'Staff Software Engineer', 'Lead Backend Engineer'],
-      skills: ['TypeScript', 'Node.js', 'PostgreSQL', 'Kubernetes', 'Distributed Systems'],
-      preferredStages: ['growth', 'public', 'startup'],
-      locations: ['Remote', 'San Francisco', 'New York'],
-      minSalary: 160000,
-      bio: 'High-throughput system designer specializing in autonomous agent workflows and distributed microservices.'
-    };
+  async getUserProfile(): Promise<UserProfileData | null> {
+    const result = await request<{ profile: UserProfileData | null }>(`${API_PREFIX}/profile`);
+    return result.profile;
   },
 
-  async saveUserProfile(profile: UserProfileData): Promise<{ success: boolean }> {
-    return { success: true };
+  async saveUserProfile(profile: UserProfileData): Promise<{ success: boolean; persistence?: string }> {
+    const result = await request<{ profile: UserProfileData; persistence: string }>(`${API_PREFIX}/profile`, {
+      method: 'POST',
+      body: JSON.stringify(profile)
+    });
+    return { success: true, persistence: result.persistence };
   }
 };

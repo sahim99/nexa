@@ -1,6 +1,10 @@
+# Groq ids verified against Groq docs on 2026-11-05.
+# Free-tier chat models: openai/gpt-oss-20b, openai/gpt-oss-120b, qwen/qwen3.8-27b
+# (30 RPM / 1,000 RPD). Retired: llama-3.1-8b-instant, gemma2-9b-it.
+# OpenRouter entries stay on :free models. Template is the last resort for every task.
 FAST_CLASSIFICATION:
   primary: groq
-  model: llama-3.1-8b-instant
+  model: openai/gpt-oss-20b
   maxTokens: 100
   fallback: template
 
@@ -9,7 +13,7 @@ JD_ANALYSIS:
   model: qwen/qwen-2.5-72b-instruct:free
   maxTokens: 500
   fallback: groq
-  fallbackModel: llama-3.1-8b-instant
+  fallbackModel: qwen/qwen3.8-27b
   lastResort: template
 
 COVER_LETTER:
@@ -22,7 +26,7 @@ COVER_LETTER:
 
 OUTREACH_EMAIL:
   primary: groq
-  model: llama-3.1-8b-instant
+  model: openai/gpt-oss-20b
   maxTokens: 500
   fallback: openrouter
   fallbackModel: mistralai/mistral-7b-instruct:free
@@ -30,7 +34,7 @@ OUTREACH_EMAIL:
 
 BRIEFING_SUMMARY:
   primary: groq
-  model: llama-3.1-8b-instant
+  model: openai/gpt-oss-20b
   maxTokens: 300
   fallback: template
 
@@ -46,14 +50,14 @@ FUNCTION_CALLING:
   primary: ollama
   model: qwen2.5:7b
   fallback: groq
-  fallbackModel: llama-3.1-8b-instant
+  fallbackModel: qwen/qwen3.8-27b
   lastResort: template
 
 GENERAL_CHAT:
   primary: openrouter
   model: meta-llama/llama-3.1-8b-instruct:free
   fallback: groq
-  fallbackModel: llama-3.1-8b-instant
+  fallbackModel: openai/gpt-oss-20b
   lastResort: template
 
 EMBEDDING:

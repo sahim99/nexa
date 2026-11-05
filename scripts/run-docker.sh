@@ -40,7 +40,7 @@ echo "[OK] Database URL loaded."
 # 3. Synchronize Prisma Schema to Supabase
 echo ""
 echo "[3/4] Syncing Database schema with Supabase..."
-npx prisma db push --schema=packages/database/prisma/schema.prisma --accept-data-loss || true
+npx prisma db push --schema=packages/database/prisma/schema.prisma
 
 # 4. Build and start containers
 echo ""

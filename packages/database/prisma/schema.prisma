@@ -1,3 +1,6 @@
+// Canonical Nexa schema. apps/api/prisma/schema.prisma is not used by DatabaseService.
+// See docs/database.md. Do not push with --accept-data-loss.
+
 generator client {
   provider = "prisma-client-js"
 }

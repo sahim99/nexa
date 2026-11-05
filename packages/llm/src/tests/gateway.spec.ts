@@ -84,6 +84,29 @@ describe('LlmGateway Detachable Architecture', () => {
     const route = gateway.route('COVER_LETTER');
     expect(route.length).toBeGreaterThanOrEqual(1);
     expect(route[0].provider).toBe('openrouter');
+    expect(route.some((step) => step.provider === 'template')).toBe(true);
+
+    const fast = gateway.route('FAST_CLASSIFICATION');
+    expect(fast[0]).toEqual({ provider: 'groq', model: 'openai/gpt-oss-20b' });
+    expect(fast.some((step) => step.provider === 'template')).toBe(true);
+
+    const analysis = gateway.route('JD_ANALYSIS');
+    expect(analysis[0].provider).toBe('openrouter');
+    expect(analysis[1]).toEqual({ provider: 'groq', model: 'qwen/qwen3.8-27b' });
+    expect(analysis.some((step) => step.provider === 'template')).toBe(true);
+  });
+
+  it('points Groq at current free-tier models and limits', async () => {
+    const { GroqProvider } = await import('../providers/groq.provider');
+    const { DEFAULT_PROVIDER_LIMITS } = await import('../quota.manager');
+    const groq = new GroqProvider();
+    const ids = Object.values(groq.models);
+    expect(ids).not.toContain('llama-3.1-8b-instant');
+    expect(ids).not.toContain('gemma2-9b-it');
+    expect(groq.models.FAST_CLASSIFICATION).toBe('openai/gpt-oss-20b');
+    expect(groq.models.JD_ANALYSIS).toBe('qwen/qwen3.8-27b');
+    expect(groq.rateLimit).toEqual({ requestsPerMinute: 30, requestsPerDay: 1000 });
+    expect(DEFAULT_PROVIDER_LIMITS.groq.requestsPerDay).toBe(1000);
   });
 
   it('cascades to fallback when primary throws QuotaExceededError', async () => {

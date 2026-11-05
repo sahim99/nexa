@@ -12,7 +12,7 @@ import {
 
 export function useJobs(decision?: string) {
   const { data, error, isLoading, mutate } = useSWR<JobItem[]>(
-    ['/api/jobs', decision],
+    ['/v1/jobs', decision],
     () => apiClient.getJobs(decision),
     { refreshInterval: 10000, fallbackData: [] }
   );
@@ -27,7 +27,7 @@ export function useJobs(decision?: string) {
 
 export function useApprovals(status?: string) {
   const { data, error, isLoading, mutate } = useSWR<ApprovalItem[]>(
-    ['/api/approvals', status],
+    ['/v1/approvals', status],
     () => apiClient.getApprovals(status),
     { refreshInterval: 5000, fallbackData: [] }
   );
@@ -42,7 +42,7 @@ export function useApprovals(status?: string) {
 
 export function useAuditLog(userId?: string) {
   const { data, error, isLoading, mutate } = useSWR<AuditLogItem[]>(
-    ['/api/audit', userId],
+    ['/v1/audit', userId],
     () => apiClient.getAuditLogs(userId),
     { refreshInterval: 10000, fallbackData: [] }
   );
@@ -57,7 +57,7 @@ export function useAuditLog(userId?: string) {
 
 export function useMetrics() {
   const { data, error, isLoading, mutate } = useSWR<MetricsData>(
-    '/api/metrics',
+    '/v1/metrics',
     () => apiClient.getMetrics(),
     { refreshInterval: 5000 }
   );
@@ -72,7 +72,7 @@ export function useMetrics() {
 
 export function useLlmStats() {
   const { data, error, isLoading, mutate } = useSWR<LlmStatsData>(
-    '/api/llm-stats',
+    '/v1/llm-stats',
     () => apiClient.getLlmStats(),
     { refreshInterval: 5000 }
   );
@@ -83,7 +83,7 @@ export function useLlmStats() {
       cacheHits: 0,
       cacheHitRatePercent: 0,
       algorithmSavedCalls: 0,
-      algorithmPercentage: 70,
+      algorithmPercentage: 0,
       totalCostUsd: 0.0,
       providers: { groq: 0, openrouter: 0, ollama: 0, template: 0 }
     },
@@ -95,7 +95,7 @@ export function useLlmStats() {
 
 export function useAgentBoard() {
   const { data, error, isLoading, mutate } = useSWR<AgentCard[]>(
-    '/api/agent-board',
+    '/v1/agent',
     () => apiClient.getAgentBoard(),
     { refreshInterval: 10000 }
   );
@@ -109,8 +109,8 @@ export function useAgentBoard() {
 }
 
 export function useUserProfile() {
-  const { data, error, isLoading, mutate } = useSWR<UserProfileData>(
-    '/api/user-profile',
+  const { data, error, isLoading, mutate } = useSWR<UserProfileData | null>(
+    '/v1/profile',
     () => apiClient.getUserProfile()
   );
 

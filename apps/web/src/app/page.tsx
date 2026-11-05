@@ -6,10 +6,9 @@ import { LlmUsagePanel } from '../components/llm/LlmUsagePanel';
 import { AgentKanban } from '../components/agents/AgentKanban';
 import { JobCard } from '../components/jobs/JobCard';
 import { useJobs, useApprovals } from '../lib/hooks';
-import { apiClient, JobItem } from '../lib/api-client';
+import { apiClient } from '../lib/api-client';
 import {
   Sparkles,
-  Search,
   CheckCircle,
   Briefcase,
   Sliders,
@@ -24,7 +23,7 @@ export default function Dashboard() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
 
-  const { jobs, isLoading: jobsLoading, mutate: mutateJobs } = useJobs(filter === 'ALL' ? undefined : filter);
+  const { jobs, isLoading: jobsLoading, isError: jobsError, mutate: mutateJobs } = useJobs(filter === 'ALL' ? undefined : filter);
   const { approvals } = useApprovals('PENDING');
 
   const handleTriggerScan = async () => {
@@ -35,57 +34,12 @@ export default function Dashboard() {
       setScanMessage('Job collection scan initiated across Greenhouse, Lever, and YC.');
       await mutateJobs();
       setTimeout(() => setScanMessage(null), 4000);
-    } catch {
-      setScanMessage('Pipeline scan dispatched.');
-      setTimeout(() => setScanMessage(null), 4000);
+    } catch (err) {
+      setScanMessage(err instanceof Error ? err.message : 'Job collection failed');
     } finally {
       setIsScanning(false);
     }
   };
-
-  const sampleFallbackJobs: JobItem[] = [
-    {
-      id: 'job_sample_1',
-      title: 'Principal Systems Architect',
-      company: 'Stripe',
-      location: 'Remote',
-      url: 'https://stripe.com/jobs',
-      description: 'Design distributed high-throughput settlement systems using TypeScript and Go.',
-      skills: ['TypeScript', 'Distributed Systems', 'PostgreSQL', 'Kubernetes'],
-      companyStage: 'growth',
-      score: 92,
-      decision: 'APPLY',
-      reason: 'Rule score 92/100: Exact role match, 4 primary skills, target salary and growth stage.'
-    },
-    {
-      id: 'job_sample_2',
-      title: 'Staff Platform Engineer',
-      company: 'Vercel',
-      location: 'San Francisco, CA',
-      url: 'https://vercel.com/careers',
-      description: 'Lead edge routing and microservice architecture across global data centers.',
-      skills: ['TypeScript', 'Node.js', 'Next.js', 'Kubernetes'],
-      companyStage: 'growth',
-      score: 84,
-      decision: 'APPLY',
-      reason: 'Rule score 84/100: Strong core skills alignment and preferred compensation tier.'
-    },
-    {
-      id: 'job_sample_3',
-      title: 'Senior Backend Developer',
-      company: 'Linear',
-      location: 'Remote',
-      url: 'https://linear.app/careers',
-      description: 'Build real-time synchronization pipelines with TypeScript and WebSockets.',
-      skills: ['TypeScript', 'WebSockets', 'PostgreSQL'],
-      companyStage: 'startup',
-      score: 72,
-      decision: 'REVIEW',
-      reason: 'Score 72/100: Ambiguous range. Evaluated via fast classifier; requires brief confirmation.'
-    }
-  ];
-
-  const displayedJobs = jobs.length > 0 ? jobs : sampleFallbackJobs;
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 p-6 pb-20">
@@ -190,8 +144,16 @@ export default function Dashboard() {
             <div className="col-span-full py-12 text-center text-slate-400 text-xs">
               Filtering opportunities...
             </div>
+          ) : jobsError ? (
+            <div className="col-span-full py-12 text-center text-rose-300 text-xs">
+              Could not load jobs from /v1/jobs. Sign in with the API admin user, then retry.
+            </div>
+          ) : jobs.length === 0 ? (
+            <div className="col-span-full py-12 text-center text-slate-400 text-xs">
+              No jobs stored. Trigger a scan to collect from Greenhouse and Lever. The list lives in API memory until the process restarts.
+            </div>
           ) : (
-            displayedJobs.map((job) => <JobCard key={job.id} job={job} />)
+            jobs.map((job) => <JobCard key={job.id} job={job} />)
           )}
         </div>
       </section>

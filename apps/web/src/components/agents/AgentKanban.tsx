@@ -15,7 +15,7 @@ const LANES = [
 ] as const;
 
 export function AgentKanban() {
-  const { agents, isLoading } = useAgentBoard();
+  const { agents, isLoading, isError } = useAgentBoard();
 
   const getAgentsInLane = (laneId: string): AgentCard[] => {
     return agents.filter((agent) => agent.lane === laneId);
@@ -56,7 +56,11 @@ export function AgentKanban() {
             Autonomous Agent Orchestration Matrix (LifeOS)
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            6-stage pipelined agent lifecycle executing in parallel with permission isolation
+            {isError
+              ? 'Could not load /v1/agent. Sign in to see registered specialists.'
+              : isLoading
+                ? 'Loading registered agents...'
+                : `${agents.length} agents registered in this API process. Task counts are not stored yet.`}
           </p>
         </div>
       </div>

@@ -38,6 +38,7 @@
     "@nexa/events": "^1.0.0",
     "@nexa/execution-engine": "^1.0.0",
     "@nexa/llm": "*",
+    "@nexa/observability": "*",
     "@nexa/resume": "*",
     "@nexa/shared": "*",
     "@nexa/workflows": "*",

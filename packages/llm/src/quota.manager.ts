@@ -7,7 +7,7 @@ export interface ProviderLimits {
 }
 
 export const DEFAULT_PROVIDER_LIMITS: Record<ProviderName, ProviderLimits> = {
-  groq: { requestsPerMinute: 30, requestsPerDay: 6000 },
+  groq: { requestsPerMinute: 30, requestsPerDay: 1000 },
   openrouter: { requestsPerMinute: 60, requestsPerDay: 2000 },
   huggingface: { requestsPerMinute: 20, requestsPerDay: 1000 },
   ollama: { requestsPerMinute: 0, requestsPerDay: 0 },

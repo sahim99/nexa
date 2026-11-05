@@ -29,7 +29,7 @@ export default function InsightsPage() {
           Autonomous Learning & Conversion Insights
         </h1>
         <p className="text-sm text-slate-400 mt-1">
-          Self-adjusting multi-agent weights based on empirical interview outcomes and recruiter reply telemetry.
+          These figures are placeholders. No outcomes API is connected, so they are not live conversion data.
         </p>
       </div>
 

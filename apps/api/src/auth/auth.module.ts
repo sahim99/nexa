@@ -8,7 +8,7 @@ import { JwtStrategy } from './strategies/jwt.strategy.js';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'dev-secret-key-change-in-prod',
       signOptions: { expiresIn: '8h' },
@@ -16,5 +16,6 @@ import { JwtStrategy } from './strategies/jwt.strategy.js';
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
+  exports: [PassportModule, AuthService],
 })
 export class AuthModule {}
