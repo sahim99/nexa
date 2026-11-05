@@ -18,7 +18,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
     });
-    return { message: 'Logged in successfully' };
+    return { message: 'Logged in successfully', access_token };
   }
 
   @Public()

@@ -23,5 +23,9 @@ describe('JobsController', () => {
     expect(result.success).toBe(true);
     expect(result.collectedCount).toBeGreaterThanOrEqual(1);
     expect(result.jobs.length).toBeGreaterThanOrEqual(1);
+    expect(result.storedCount).toBe(result.collectedCount);
+    const stored = await controller.getJobs();
+    expect(stored.length).toBe(Math.min(50, result.collectedCount));
+    expect(stored.every((job) => job.score !== 92 || job.reason.length > 0)).toBe(true);
   }, 15000);
 });

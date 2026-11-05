@@ -19,8 +19,8 @@ export default function Dashboard() {
           <NavItem label="Integrations" icon="🔌" />
         </nav>
         <div className="p-4 border-t border-gray-800 text-xs text-gray-500">
-          Status: Operational<br/>
-          Latency: 12ms
+          Status: shell only<br/>
+          API: not queried here
         </div>
       </aside>
 
@@ -29,28 +29,20 @@ export default function Dashboard() {
         <header className="h-16 border-b border-gray-800 flex items-center px-8 justify-between">
           <h2 className="text-lg font-medium text-gray-200">Active Workflow: Daily Job Scan</h2>
           <div className="flex items-center space-x-4">
-            <span className="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full text-xs font-mono border border-blue-800/50">
-              SCANNING...
+            <span className="px-3 py-1 bg-gray-900 text-gray-400 rounded-full text-xs font-mono border border-gray-800">
+              NOT CONNECTED
             </span>
           </div>
         </header>
 
         <div className="p-8 space-y-6 flex-1">
           {/* Metrics Row */}
-          <div className="grid grid-cols-3 gap-6">
-            <MetricCard title="Jobs Scanned" value="1,248" trend="+12% today" />
-            <MetricCard title="High Matches" value="42" trend="Score > 85" />
-            <MetricCard title="Auto-Applied" value="7" trend="Requires approval" />
-          </div>
-
-          {/* Job Feed */}
-          <div className="bg-[#111] border border-gray-800 rounded-xl p-6">
-            <h3 className="text-gray-400 font-medium mb-4 uppercase tracking-wider text-xs">Recent High-Confidence Matches</h3>
-            <div className="space-y-4">
-              <JobRow company="Stripe" role="Senior Infrastructure Engineer" score="94" status="Pending Approval" />
-              <JobRow company="Netflix" role="Distributed Systems Architect" score="91" status="Applied" />
-              <JobRow company="Anthropic" role="Backend Engineer" score="88" status="Analyzing..." />
-            </div>
+          <div className="bg-[#111] border border-gray-800 rounded-xl p-6 text-sm text-gray-300 space-y-3">
+            <h3 className="text-gray-200 font-medium">This route is not connected to the API</h3>
+            <p>
+              Job counts and company names are not loaded here. The live pipeline, login, and collected jobs are on the home page.
+            </p>
+            <a href="/" className="inline-block text-cyan-400 hover:text-cyan-300">Open the command center</a>
           </div>
         </div>
       </main>
@@ -65,15 +57,15 @@ export default function Dashboard() {
             <div className="w-24 h-24 rounded-full bg-black/50 backdrop-blur-sm border border-white/10" />
           </div>
           <div className="absolute bottom-4 left-0 right-0 text-center text-xs text-blue-400 font-mono">
-            LISTENING...
+            CHAT NOT WIRED
           </div>
         </div>
 
         {/* Chat Interface */}
         <div className="flex-1 p-4 overflow-y-auto space-y-4">
-          <ChatMessage sender="nexa" message="I found 3 new roles at Series C startups that match your distributed systems background. Shall I queue the approvals?" />
-          <ChatMessage sender="user" message="Yes, queue them up. Also summarize the Stripe role." />
-          <ChatMessage sender="nexa" message="Queued. The Stripe role focuses on their global ledger. Requires Go and AWS. Salary range matches your criteria." />
+          <p className="text-sm text-gray-400">
+            Assistant chat on this page does not call /v1/agent/interact. Use a signed-in client against that endpoint.
+          </p>
         </div>
 
         {/* Input */}
@@ -100,37 +92,5 @@ const NavItem = ({ active, label, icon }: { active?: boolean, label: string, ico
   <div className={`flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${active ? 'bg-blue-600/10 text-blue-400' : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-200'}`}>
     <span>{icon}</span>
     <span className="text-sm font-medium">{label}</span>
-  </div>
-);
-
-const MetricCard = ({ title, value, trend }: { title: string, value: string, trend: string }) => (
-  <div className="bg-[#111] border border-gray-800 rounded-xl p-5">
-    <div className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-2">{title}</div>
-    <div className="text-3xl font-light text-white mb-1">{value}</div>
-    <div className="text-emerald-400 text-xs">{trend}</div>
-  </div>
-);
-
-const JobRow = ({ company, role, score, status }: { company: string, role: string, score: string, status: string }) => (
-  <div className="flex items-center justify-between p-3 bg-[#0a0a0a] rounded-lg border border-gray-800/50 hover:border-gray-700 transition-colors cursor-pointer">
-    <div>
-      <div className="text-gray-200 font-medium">{role}</div>
-      <div className="text-gray-500 text-sm">{company}</div>
-    </div>
-    <div className="flex items-center space-x-4">
-      <div className="text-right">
-        <div className="text-blue-400 text-sm font-mono">{score}% Match</div>
-        <div className="text-gray-500 text-xs">{status}</div>
-      </div>
-    </div>
-  </div>
-);
-
-const ChatMessage = ({ sender, message }: { sender: 'user'|'nexa', message: string }) => (
-  <div className={`flex flex-col ${sender === 'user' ? 'items-end' : 'items-start'}`}>
-    <div className="text-[10px] text-gray-600 uppercase mb-1 tracking-widest">{sender === 'nexa' ? 'NEXA AI' : 'YOU'}</div>
-    <div className={`p-3 rounded-lg text-sm max-w-[90%] leading-relaxed ${sender === 'user' ? 'bg-blue-600/20 text-blue-100 border border-blue-500/30' : 'bg-[#111] text-gray-300 border border-gray-800'}`}>
-      {message}
-    </div>
   </div>
 );

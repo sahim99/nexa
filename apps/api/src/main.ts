@@ -11,7 +11,12 @@ import { FixtureModeGuard } from './common/guards/fixture.guard.js';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('v1');
-  app.enableCors();
+  const webOrigin = process.env.WEB_ORIGIN?.split(',').map((origin) => origin.trim()).filter(Boolean);
+  app.enableCors({
+    origin: webOrigin && webOrigin.length > 0 ? webOrigin : ['http://localhost:3000'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
   
   app.use(cookieParser());
   app.useGlobalFilters(new HttpErrorFilter());

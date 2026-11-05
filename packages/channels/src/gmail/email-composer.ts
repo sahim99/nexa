@@ -24,7 +24,7 @@ export class EmailComposer {
 
   /**
    * Composes a cold outreach or follow-up email via LlmGateway (OUTREACH_EMAIL).
-   * Primary: Groq (gemma2-9b-it) -> OpenRouter (mistral-7b-instruct:free) -> template fallback.
+   * Primary: Groq (openai/gpt-oss-20b) -> OpenRouter (mistral-7b-instruct:free) -> template fallback.
    * Guarantees variables { name, role, company } are populated.
    */
   async composeOutreach(input: EmailComposerInput): Promise<ComposedEmail> {

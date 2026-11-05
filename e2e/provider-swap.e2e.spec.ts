@@ -12,7 +12,7 @@ describe('E2E: Detachable LLM Provider Swap (YAML-Driven)', () => {
     const initialYaml = `
 COVER_LETTER:
   primary: groq
-  model: llama-3.1-8b-instant
+  model: openai/gpt-oss-20b
   fallback: template
 `;
     fs.writeFileSync(tempYamlPath, initialYaml, 'utf8');

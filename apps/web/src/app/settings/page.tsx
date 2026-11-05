@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUserProfile } from '../../lib/hooks';
 import { apiClient } from '../../lib/api-client';
-import { User, Cpu, Save, RefreshCw, CheckCircle2, Sliders } from 'lucide-react';
+import { User, Cpu, Save, CheckCircle2, Sliders } from 'lucide-react';
 
 export default function SettingsPage() {
   const { profile, isLoading, mutate } = useUserProfile();
@@ -11,12 +11,23 @@ export default function SettingsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Form local state
-  const [fullName, setFullName] = useState('Sahim Developer');
-  const [email, setEmail] = useState('sahim@enterprise.com');
-  const [targetRoles, setTargetRoles] = useState('Principal Systems Architect, Staff Software Engineer');
-  const [skills, setSkills] = useState('TypeScript, Node.js, PostgreSQL, Kubernetes, Distributed Systems');
-  const [locations, setLocations] = useState('Remote, San Francisco, New York');
-  const [minSalary, setMinSalary] = useState(160000);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [targetRoles, setTargetRoles] = useState('');
+  const [skills, setSkills] = useState('');
+  const [locations, setLocations] = useState('');
+  const [minSalary, setMinSalary] = useState(0);
+  const [saveNote, setSaveNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!profile) return;
+    setFullName(profile.fullName || '');
+    setEmail(profile.email || '');
+    setTargetRoles((profile.targetRoles || []).join(', '));
+    setSkills((profile.skills || []).join(', '));
+    setLocations((profile.locations || []).join(', '));
+    setMinSalary(profile.minSalary || 0);
+  }, [profile]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,15 +35,16 @@ export default function SettingsPage() {
     setSaveSuccess(false);
 
     try {
-      await apiClient.saveUserProfile({
+      const saved = await apiClient.saveUserProfile({
         fullName,
         email,
-        targetRoles: targetRoles.split(',').map((s) => s.trim()),
-        skills: skills.split(',').map((s) => s.trim()),
-        preferredStages: ['growth', 'public', 'startup'],
-        locations: locations.split(',').map((s) => s.trim()),
+        targetRoles: targetRoles.split(',').map((s) => s.trim()).filter(Boolean),
+        skills: skills.split(',').map((s) => s.trim()).filter(Boolean),
+        preferredStages: [],
+        locations: locations.split(',').map((s) => s.trim()).filter(Boolean),
         minSalary: Number(minSalary)
       });
+      setSaveNote(saved.persistence === 'memory' ? 'Saved in API memory for this process' : 'Saved');
       setSaveSuccess(true);
       await mutate();
       setTimeout(() => setSaveSuccess(false), 3000);
@@ -61,6 +73,7 @@ export default function SettingsPage() {
             Candidate Search Profile
           </div>
 
+          {isLoading && <p className="text-xs text-slate-500 mt-3">Loading saved profile...</p>}
           <form onSubmit={handleSave} className="space-y-4 mt-5">
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
@@ -136,7 +149,7 @@ export default function SettingsPage() {
               {saveSuccess && (
                 <span className="text-xs text-emerald-400 flex items-center gap-1 font-mono">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Saved to database
+                  {saveNote || 'Saved'}
                 </span>
               )}
             </div>
@@ -159,7 +172,7 @@ export default function SettingsPage() {
                 <span>COVER_LETTER</span>
                 <span className="text-emerald-400 text-[10px]">CACHE: 24h TTL</span>
               </div>
-              <p className="text-slate-400 text-[11px]">Primary: OpenRouter (Llama-3.3-70B:free)</p>
+              <p className="text-slate-400 text-[11px]">Primary: OpenRouter (Llama-3.1-70B:free)</p>
               <p className="text-slate-400 text-[11px]">Fallback: OpenRouter (Qwen-2.5-72B:free) → Template</p>
             </div>
 
@@ -168,7 +181,7 @@ export default function SettingsPage() {
                 <span>OUTREACH_EMAIL</span>
                 <span className="text-emerald-400 text-[10px]">CACHE: 24h TTL</span>
               </div>
-              <p className="text-slate-400 text-[11px]">Primary: Groq (Llama-3.1-8B-instant)</p>
+              <p className="text-slate-400 text-[11px]">Primary: Groq (openai/gpt-oss-20b)</p>
               <p className="text-slate-400 text-[11px]">Fallback: OpenRouter (Mistral-7B:free) → Template</p>
             </div>
 
@@ -178,7 +191,7 @@ export default function SettingsPage() {
                 <span className="text-emerald-400 text-[10px]">CACHE: 7d TTL</span>
               </div>
               <p className="text-slate-400 text-[11px]">Primary: OpenRouter (Qwen-2.5-72B:free)</p>
-              <p className="text-slate-400 text-[11px]">Fallback: Groq → Template Fallback</p>
+              <p className="text-slate-400 text-[11px]">Fallback: Groq (qwen/qwen3.8-27b) → Template</p>
             </div>
 
             <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
@@ -193,13 +206,9 @@ export default function SettingsPage() {
 
           <div className="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between">
             <span className="text-[11px] text-slate-400">Zero-code provider swapping active</span>
-            <button
-              onClick={() => alert('Provider swap configuration reloaded successfully.')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs transition-colors"
-            >
-              <RefreshCw className="w-3 h-3 text-cyan-400" />
-              Reload YAML Config
-            </button>
+            <p className="text-[11px] text-slate-500">
+              The API reads provider-map.yaml when the gateway starts. This screen does not reload it.
+            </p>
           </div>
         </div>
       </div>

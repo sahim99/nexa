@@ -29,8 +29,8 @@ import { ExecutionEngineModule } from '../execution-engine/execution-engine.modu
     },
     {
       provide: ManagerAgent,
-      useFactory: (modelRouter: ModelRouter) => new ManagerAgent(modelRouter),
-      inject: [ModelRouter],
+      useFactory: (modelRouter: ModelRouter, registry: AgentRegistry) => new ManagerAgent(modelRouter, registry),
+      inject: [ModelRouter, AgentRegistry],
     },
     // Provide Task Runner
     {

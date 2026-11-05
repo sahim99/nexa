@@ -85,7 +85,7 @@ export type ProviderName = 'ollama' | 'groq' | 'openrouter' | 'huggingface' | 't
 | Provider | Models (Free) | Rate Limit | Best for | Key |
 |---|---|---|---|---|
 | **Ollama** (local) | `llama3.1:8b`, `qwen2.5:7b`, `nomic-embed-text` | Unlimited | Everything when running locally | None needed |
-| **Groq** | `llama-3.1-8b-instant`, `gemma2-9b-it` | 30 req/min · 6000 req/day | Fast classification, briefings, outreach | Free account |
+| **Groq** | `openai/gpt-oss-20b`, `openai/gpt-oss-120b`, `qwen/qwen3.8-27b` | 30 req/min · 1000 req/day (free plan, 2026-11-05) | Fast classification, briefings, outreach, JSON analysis | Free account |
 | **OpenRouter** | `meta-llama/llama-3.1-8b-instruct:free` · `google/gemma-3-27b-it:free` · `qwen/qwen-2.5-72b-instruct:free` · `deepseek/deepseek-r1:free` · `mistralai/mistral-7b-instruct:free` | 20-200 req/min (varies per model) | Cover letters, business reasoning, JD analysis | Free account ($1 credit) |
 | **HuggingFace** | `sentence-transformers/all-MiniLM-L6-v2` (embeddings) · `google/flan-t5-xxl` | 1000 req/day | Embedding backup only | Free account |
 | **ONNX local** | `all-MiniLM-L6-v2` via `@xenova/transformers` | Unlimited | **Primary embeddings** — no network needed | None |

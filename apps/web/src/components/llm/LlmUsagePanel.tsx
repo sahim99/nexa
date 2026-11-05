@@ -5,7 +5,7 @@ import { useLlmStats } from '../../lib/hooks';
 import { Cpu, Zap, Database, DollarSign, Layers } from 'lucide-react';
 
 export function LlmUsagePanel() {
-  const { stats, isLoading } = useLlmStats();
+  const { stats, isLoading, isError } = useLlmStats();
 
   return (
     <div className="rounded-xl border border-slate-800 bg-[#060c18]/80 p-6 backdrop-blur-md shadow-2xl">
@@ -16,7 +16,11 @@ export function LlmUsagePanel() {
           </div>
           <div>
             <h3 className="font-semibold text-slate-100 text-base">LLM & Algorithm Efficiency Engine</h3>
-            <p className="text-xs text-slate-400">Deterministic fallback cascade & algorithm-first routing</p>
+            <p className="text-xs text-slate-400">
+              {isError
+                ? 'Metrics request failed. Sign in, then refresh. Counts are not invented when the API is unreachable.'
+                : 'In-process counters from /v1/metrics. Per-provider splits are not tracked yet.'}
+            </p>
           </div>
         </div>
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

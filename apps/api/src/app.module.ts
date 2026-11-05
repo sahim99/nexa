@@ -15,11 +15,16 @@ import { WorkflowsModule } from './workflows/workflows.module.js';
 import { BusinessModule } from './business/business.module.js';
 import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { AgentRuntimeModule } from './agent-runtime/runtime.module.js';
+import { ProfileModule } from './profile/profile.module.js';
+import { MetricsController } from './metrics/metrics.controller.js';
 
 @Module({
   imports: [
     HealthModule,
     AuthModule,
+    AgentRuntimeModule,
+    ProfileModule,
     DatabaseModule,
     EventsModule,
     AgentModule,
@@ -30,7 +35,7 @@ import { AuthModule } from './auth/auth.module.js';
     WorkflowsModule,
     BusinessModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, MetricsController],
   providers: [
     AppService,
     {

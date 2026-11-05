@@ -1,3 +1,6 @@
+// NOT the schema the API uses. Canonical schema: packages/database/prisma/schema.prisma
+// See docs/database.md. Do not db push this file.
+
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")

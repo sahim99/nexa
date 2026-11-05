@@ -41,7 +41,7 @@ export class InteractionAgent extends BaseAgent {
       const messages = [
         { 
           role: 'system', 
-          content: 'You are the Nexa Interaction Agent. Your job is to understand the user request, determine if it needs clarification, and extract the intent to forward to the Manager Agent.'
+          content: 'You are the Nexa Interaction Agent. Return JSON only with keys intent (EXECUTE_TASK or CLARIFY), clarificationNeeded (boolean), and response (string). Use CLARIFY when the request is too vague to plan.'
         },
         {
           role: 'user',
@@ -51,24 +51,24 @@ export class InteractionAgent extends BaseAgent {
 
       // Use FAST tier for quick interaction routing
       const response = await this.modelRouter.route('FAST', messages);
-      
-      // We would parse the JSON response here.
-      // Mocking the parsed structure for now since LLM response format isn't strictly enforced in this stub.
-      
+      const parsed = parseIntent(response.content);
+
       return {
         taskId: task.id,
         success: true,
         data: {
-          intent: 'EXECUTE_TASK',
-          clarificationNeeded: false,
-          response: 'I will handle that for you right away.',
+          intent: parsed.intent,
+          clarificationNeeded: parsed.clarificationNeeded,
+          response: parsed.response,
+          modelResponse: response.content,
           forwardPayload: {
             originalRequest: userInput,
             context: {}
           }
         },
         metadata: {
-          usage: response.usage
+          usage: response.usage,
+          model: response.model
         }
       };
     } catch (error: any) {
@@ -78,5 +78,29 @@ export class InteractionAgent extends BaseAgent {
         error: error.message
       };
     }
+  }
+}
+
+function parseIntent(content: string): { intent: string; clarificationNeeded: boolean; response: string } {
+  const fallback = {
+    intent: 'EXECUTE_TASK',
+    clarificationNeeded: false,
+    response: 'I will handle that for you right away.'
+  };
+  if (!content) return fallback;
+  const start = content.indexOf('{');
+  const end = content.lastIndexOf('}');
+  if (start === -1 || end <= start) {
+    return { ...fallback, response: content.trim() || fallback.response };
+  }
+  try {
+    const parsed = JSON.parse(content.slice(start, end + 1));
+    return {
+      intent: typeof parsed.intent === 'string' ? parsed.intent : fallback.intent,
+      clarificationNeeded: typeof parsed.clarificationNeeded === 'boolean' ? parsed.clarificationNeeded : false,
+      response: typeof parsed.response === 'string' ? parsed.response : fallback.response
+    };
+  } catch {
+    return fallback;
   }
 }
